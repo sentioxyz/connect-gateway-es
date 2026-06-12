@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package connectgateway.testing;
 
+option go_package = "github.com/sentioxyz/connect-gateway-es/conformance/gen/connectgateway/testing";
+
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
 import "google/protobuf/duration.proto";

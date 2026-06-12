@@ -25,3 +25,24 @@ jobs:
         run: pnpm build && pnpm test && pnpm lint
       - name: Generated code up to date
         run: pnpm gen && git diff --exit-code
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: conformance/go.mod
+          cache-dependency-path: conformance/go.sum
+      - name: Install
+        run: pnpm install
+      - name: Conformance against grpc-gateway
+        run: pnpm test:conformance

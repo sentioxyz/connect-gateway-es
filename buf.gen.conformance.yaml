@@ -1,0 +1,20 @@
+# Go stubs for the conformance echo server: protobuf + grpc + grpc-gateway.
+# generate_unbound_methods registers routes for unannotated RPCs, matching the
+# unboundMethodsFallback exported by this library.
+version: v2
+inputs:
+  - directory: tests/proto
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.36.11
+    out: conformance/gen
+    opt:
+      - paths=source_relative
+  - remote: buf.build/grpc/go:v1.6.2
+    out: conformance/gen
+    opt:
+      - paths=source_relative
+  - remote: buf.build/grpc-ecosystem/gateway:v2.29.0
+    out: conformance/gen
+    opt:
+      - paths=source_relative
+      - generate_unbound_methods=true

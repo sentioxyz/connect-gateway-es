@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "alwaysStrict": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "lib": ["ESNext", "DOM"],
+    "types": ["node"],
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "isolatedModules": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "stripInternal": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "./src",
+    "outDir": "dist/esm"
+  },
+  "include": ["src"],
+  "exclude": ["dist", "**/*.test.ts"]
+}

@@ -1,0 +1,36 @@
+# macOS Finder metadata
+.DS_Store
+
+# IDE
+.idea
+.run
+.vscode
+
+# Logs
+logs
+*.log
+npm-debug.log*
+.pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Build output
+dist
+
+# Coverage
+coverage
+*.lcov
+
+# Output of 'npm pack'
+*.tgz
+
+# dotenv environment variable files
+.env
+.env.local
+
+# Conformance harness build artifacts
+conformance/bin/

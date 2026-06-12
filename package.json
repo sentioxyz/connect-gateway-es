@@ -1,0 +1,76 @@
+{
+  "name": "@sentio/connect-gateway-es",
+  "version": "1.0.0-development",
+  "description": "Connect-ES transport that speaks the grpc-gateway REST dialect, driven by google.api.http annotations read from protobuf-es descriptors",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sentioxyz/connect-gateway-es.git"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./dist/esm/index.js",
+    "./google/api": "./dist/esm/gen/google/api/index.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/tests"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write .",
+    "gen": "./scripts/gen.sh",
+    "lint": "ls-lint && eslint .",
+    "prepare": "sh ./scripts/setup-hooks.sh",
+    "test": "tsx --test 'src/**/*.test.ts' 'tests/unit/**/*.test.ts'",
+    "test:conformance": "tsx --test 'tests/conformance/**/*.test.ts'"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^2.12.0",
+    "@connectrpc/connect": "^2.0.0"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.67.0",
+    "@bufbuild/protobuf": "^2.12.0",
+    "@bufbuild/protoc-gen-es": "^2.12.0",
+    "@connectrpc/connect": "^2.0.0",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
+    "@ls-lint/ls-lint": "^2.3.0",
+    "@types/node": "^24.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/parser": "^8.60.0",
+    "conventional-changelog-conventionalcommits": "^9.3.1",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "fast-check": "^4.6.0",
+    "lint-staged": "^17.0.0",
+    "prettier": "^3.8.3",
+    "prettier-package-json": "^2.8.0",
+    "prettier-plugin-sh": "^0.18.1",
+    "semantic-release": "^25.0.3",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.0",
+    "typescript-eslint": "^8.60.0"
+  },
+  "keywords": [
+    "connect",
+    "connectrpc",
+    "grpc",
+    "grpc-gateway",
+    "protobuf-es",
+    "rest",
+    "transcoding",
+    "transport"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.3.0"
+}

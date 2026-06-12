@@ -1,0 +1,10 @@
+version: v2
+modules:
+  - path: third_party/googleapis
+  - path: tests/proto
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

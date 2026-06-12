@@ -1,0 +1,7 @@
+# pnpm 11 errors on ignored build scripts unless explicitly approved here.
+# @bufbuild/buf downloads the buf binary; esbuild (tsx) and unrs-resolver
+# (eslint-import-resolver-typescript) ship legitimate postinstall builds.
+allowBuilds:
+  '@bufbuild/buf': true
+  esbuild: true
+  unrs-resolver: true

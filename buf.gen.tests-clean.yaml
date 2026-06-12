@@ -1,0 +1,11 @@
+# Test schemas generated with stock protoc-gen-es: the google/api imports are kept,
+# so the descriptors carry a resolvable dependency on annotations.proto.
+version: v2
+inputs:
+  - directory: tests/proto
+plugins:
+  - local: protoc-gen-es
+    out: tests/gen/clean
+    opt:
+      - target=ts
+      - import_extension=js

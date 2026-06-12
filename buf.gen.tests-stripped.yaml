@@ -1,0 +1,13 @@
+# Test schemas generated through the strip-imports wrapper, emulating codegen setups
+# (e.g. Bazel rules) that drop options-only imports such as google/api/annotations.proto
+# from the FileDescriptorProto dependency list. The google.api.http option bytes survive
+# in the embedded descriptor as unknown fields; route resolution must still work.
+version: v2
+inputs:
+  - directory: tests/proto
+plugins:
+  - local: ['node', './scripts/protoc-gen-es-strip.mjs']
+    out: tests/gen/stripped
+    opt:
+      - target=ts
+      - import_extension=js

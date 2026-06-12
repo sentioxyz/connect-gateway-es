@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+echo "Running pre-push other linters"
+
+if command -v pnpm > /dev/null 2>&1; then
+  PNPM_CMD="pnpm"
+else
+  echo "Warning: pnpm not found, skipping pre-push hook"
+  exit 0
+fi
+
+$PNPM_CMD lint

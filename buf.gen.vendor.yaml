@@ -1,0 +1,10 @@
+# Generates the vendored google/api descriptors used by the transport at runtime.
+version: v2
+inputs:
+  - directory: third_party/googleapis
+plugins:
+  - local: protoc-gen-es
+    out: src/gen
+    opt:
+      - target=ts
+      - import_extension=js

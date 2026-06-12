@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+package connectgateway.testing;
+
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+// Exercises every google.api.http feature the transport supports.
+// Also compiled by the Go conformance server (conformance/), which echoes back
+// the decoded request plus the observed wire-level method/path/query.
+service EchoService {
+  // Simple path variable; leftover fields become query parameters.
+  rpc GetSimple(GetSimpleRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/simple/{id}"};
+  }
+
+  // Nested field paths in path variables.
+  rpc GetNested(GetNestedRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/nested/{owner_and_slug.owner_name}/{owner_and_slug.slug}"};
+  }
+
+  // Double-wildcard pattern: chain_id may contain slashes.
+  rpc GetWildcard(GetWildcardRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/wild/{project}/{chain_id=**}"};
+  }
+
+  // Mixed literal/wildcard pattern.
+  rpc GetPattern(GetPatternRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/pat/{name=items/*}"};
+  }
+
+  rpc PostBody(PostBodyRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      post: "/v1/things/{id}"
+      body: "*"
+    };
+  }
+
+  // Named body field: `payload` goes to the body, the rest to query params.
+  rpc PostNamedBody(PostNamedBodyRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      post: "/v1/things/{id}/payload"
+      body: "payload"
+    };
+  }
+
+  rpc PutBody(PostBodyRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      put: "/v1/things/{id}"
+      body: "*"
+    };
+  }
+
+  rpc PatchBody(PostBodyRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      patch: "/v1/things/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteSimple(GetSimpleRequest) returns (EchoResponse) {
+    option (google.api.http) = {delete: "/v1/things/{id}"};
+  }
+
+  // additional_bindings: same RPC reachable through several verbs.
+  rpc MultiBind(PostBodyRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      post: "/v1/multi/{id}"
+      body: "*"
+      additional_bindings {get: "/v1/multi/{id}"}
+      additional_bindings {
+        put: "/v1/multi/{id}"
+        body: "*"
+      }
+      additional_bindings {delete: "/v1/multi/{id}"}
+    };
+  }
+
+  // Every field type that can appear in a query string.
+  rpc QueryKitchenSink(KitchenSinkRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/query"};
+  }
+
+  // Raw response passthrough.
+  rpc GetRaw(GetSimpleRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/v1/raw/{id}"};
+  }
+
+  // Raw request passthrough.
+  rpc PostRaw(google.api.HttpBody) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      post: "/v1/raw"
+      body: "*"
+    };
+  }
+
+  // Returns the requested grpc status code, with an optional error detail.
+  rpc Fail(FailRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/fail"};
+  }
+
+  // Server streaming over newline-delimited JSON; fail_at > 0 injects a
+  // mid-stream error chunk.
+  rpc StreamEcho(StreamEchoRequest) returns (stream EchoResponse) {
+    option (google.api.http) = {get: "/v1/stream"};
+  }
+
+  // Intentionally unannotated: exercises fallbackRule / Unimplemented.
+  rpc NoAnnotation(GetSimpleRequest) returns (EchoResponse);
+}
+
+message GetSimpleRequest {
+  string id = 1;
+  string note = 2;
+}
+
+message OwnerAndSlug {
+  string owner_name = 1;
+  string slug = 2;
+}
+
+message GetNestedRequest {
+  OwnerAndSlug owner_and_slug = 1;
+  string filter = 2;
+}
+
+message GetWildcardRequest {
+  string project = 1;
+  string chain_id = 2;
+  string extra = 3;
+}
+
+message GetPatternRequest {
+  string name = 1;
+}
+
+message Inner {
+  string a = 1;
+  int64 b = 2;
+  repeated double values = 3;
+}
+
+message PostBodyRequest {
+  string id = 1;
+  string name = 2;
+  int64 amount = 3;
+  Inner inner = 4;
+}
+
+message PostNamedBodyRequest {
+  string id = 1;
+  Inner payload = 2;
+  string extra = 3;
+}
+
+enum Color {
+  COLOR_UNSPECIFIED = 0;
+  COLOR_RED = 1;
+  COLOR_GREEN = 2;
+}
+
+message KitchenSinkRequest {
+  string str = 1;
+  int32 i32 = 2;
+  int64 i64 = 3;
+  uint64 u64 = 4;
+  bool flag = 5;
+  double dbl = 6;
+  bytes data = 7;
+  Color color = 8;
+  repeated string tags = 9;
+  repeated int64 big_tags = 10;
+  Inner inner = 11;
+  optional string opt_str = 12;
+  optional int32 opt_zero = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Duration ttl = 15;
+  google.protobuf.FieldMask mask = 16;
+  google.protobuf.StringValue str_value = 17;
+  google.protobuf.Int64Value i64_value = 18;
+  google.protobuf.BoolValue bool_value = 19;
+  google.protobuf.Struct metadata = 20;
+  map<string, string> labels = 21;
+  oneof choice {
+    string oneof_str = 22;
+    int64 oneof_int = 23;
+  }
+}
+
+message FailRequest {
+  int32 code = 1;
+  string message = 2;
+  bool with_detail = 3;
+}
+
+message StreamEchoRequest {
+  int32 count = 1;
+  int32 fail_at = 2;
+}
+
+message EchoResponse {
+  // Wire-level observations recorded by the conformance server.
+  string observed_method = 1;
+  string observed_path = 2;
+  string observed_raw_query = 3;
+  // protojson of the fully decoded request message (conformance only).
+  google.protobuf.Struct decoded_request = 4;
+  string message = 5;
+  int32 sequence = 6;
+}

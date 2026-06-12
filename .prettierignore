@@ -1,0 +1,7 @@
+dist
+src/gen
+tests/gen
+conformance/gen
+third_party
+pnpm-lock.yaml
+LICENSE

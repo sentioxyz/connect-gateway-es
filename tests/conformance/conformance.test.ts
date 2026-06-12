@@ -185,6 +185,7 @@ describe('conformance against a real grpc-gateway', () => {
         strValue: 'wrapped',
         i64Value: 5n,
         boolValue: false,
+        metadata: { k: 'v', n: 1 },
         choice: { case: 'oneofStr' as const, value: 'picked' }
       }
       const res = await makeClient({ queryParamCase }).queryKitchenSink(init)

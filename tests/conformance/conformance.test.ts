@@ -22,7 +22,8 @@ import {
   GetWildcardRequestSchema,
   KitchenSinkRequestSchema,
   PostBodyRequestSchema,
-  PostNamedBodyRequestSchema
+  PostNamedBodyRequestSchema,
+  ZeroPathRequestSchema
 } from '../gen/clean/connectgateway/testing/echo_pb.js'
 
 const conformanceDir = fileURLToPath(new URL('../../conformance', import.meta.url))
@@ -181,7 +182,8 @@ describe('conformance against a real grpc-gateway', () => {
         optZero: 0,
         createdAt: { seconds: 1781260245n, nanos: 0 },
         ttl: { seconds: 90n, nanos: 0 },
-        mask: { paths: ['inner.a', 'str'] },
+        // multi-word paths pin the camelCase->snake_case query conversion
+        mask: { paths: ['big_tags', 'inner.a', 'opt_str'] },
         strValue: 'wrapped',
         i64Value: 5n,
         boolValue: false,
@@ -192,6 +194,17 @@ describe('conformance against a real grpc-gateway', () => {
       assertDecoded(res.decodedRequest, KitchenSinkRequestSchema, init)
     })
   }
+
+  it('GetZeros: zero-valued numeric/bool/enum path variables route and decode', async () => {
+    const init = { note: 'n' }
+    const res = await makeClient().getZeros(init)
+    assert.equal(res.observedPath, '/v1/zeros/0/false/COLOR_UNSPECIFIED/0')
+    assertDecoded(res.decodedRequest, ZeroPathRequestSchema, init)
+    const nonZero = { i32: -3, flag: true, color: Color.GREEN, i64: 8n }
+    const res2 = await makeClient().getZeros(nonZero)
+    assert.equal(res2.observedPath, '/v1/zeros/-3/true/COLOR_GREEN/8')
+    assertDecoded(res2.decodedRequest, ZeroPathRequestSchema, nonZero)
+  })
 
   it('GetRaw: HttpBody response passes through raw bytes and content type', async () => {
     const res = await makeClient().getRaw({ id: 'xyz' })
@@ -249,6 +262,22 @@ describe('conformance against a real grpc-gateway', () => {
       }
     })()
     assert.deepEqual(sequences, [1, 2])
+    assert.ok(err instanceof ConnectError)
+    assert.equal(err.code, Code.Internal)
+    assert.equal(err.rawMessage, 'stream failed')
+  })
+
+  it('StreamEcho: errors before the first chunk carry code and message', async () => {
+    const err = await (async () => {
+      try {
+        for await (const res of makeClient().streamEcho({ count: 5, failAt: 1 })) {
+          void res
+        }
+        return undefined
+      } catch (e) {
+        return e
+      }
+    })()
     assert.ok(err instanceof ConnectError)
     assert.equal(err.code, Code.Internal)
     assert.equal(err.rawMessage, 'stream failed')

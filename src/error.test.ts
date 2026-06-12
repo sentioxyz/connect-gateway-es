@@ -62,6 +62,12 @@ describe('gatewayErrorFromBody', () => {
     assert.equal(err.metadata.get('www-authenticate'), 'Bearer')
   })
 
+  it('unwraps the streaming {"error": {...}} wrapper shape', () => {
+    const err = gatewayErrorFromBody({ error: { code: 8, message: 'too much', details: [] } }, 429)
+    assert.equal(err.code, Code.ResourceExhausted)
+    assert.equal(err.rawMessage, 'too much')
+  })
+
   it('returns undefined info for foreign errors', () => {
     assert.equal(gatewayErrorInfo(new ConnectError('x', Code.Internal)), undefined)
     assert.equal(gatewayErrorInfo(new Error('x')), undefined)

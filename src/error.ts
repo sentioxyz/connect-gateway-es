@@ -47,7 +47,9 @@ export function codeFromHttpStatus(status: number): Code {
   return HTTP_STATUS_CODES[status] ?? (status >= 500 ? Code.Internal : Code.Unknown)
 }
 
-function isStatusJson(body: unknown): body is JsonObject & { code?: number; message?: string; details?: JsonValue[] } {
+function isStatusJson(
+  body: unknown
+): body is JsonObject & { code?: number; message?: string; details?: JsonValue[]; error?: JsonValue } {
   return typeof body === 'object' && body !== null && !Array.isArray(body)
 }
 
@@ -64,6 +66,11 @@ export function gatewayErrorFromBody(
   headers?: Headers,
   registry?: Registry
 ): ConnectError {
+  // Streaming responses that fail before the first chunk arrive as the
+  // stream-chunk wrapper {"error": {code, message, details}} — unwrap it.
+  if (isStatusJson(body) && body.code === undefined && body.error !== undefined && isStatusJson(body.error)) {
+    body = body.error
+  }
   let code = codeFromHttpStatus(httpStatus)
   let message = `HTTP ${httpStatus}`
   let detailsJson: JsonValue[] = []

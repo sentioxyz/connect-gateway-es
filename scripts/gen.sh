@@ -7,7 +7,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-rm -rf src/gen/google tests/gen conformance/gen
+# Keep src/gen/google/api/index.ts — it is a hand-written barrel.
+rm -f src/gen/google/api/*_pb.ts
+rm -rf tests/gen conformance/gen
 
 pnpm exec buf generate --template buf.gen.vendor.yaml
 pnpm exec buf generate --template buf.gen.tests-clean.yaml --include-imports

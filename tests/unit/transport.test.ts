@@ -145,6 +145,28 @@ describe('createGatewayTransport unary', () => {
     assert.equal(calls[0].headers.get('content-type'), 'application/wasm')
   })
 
+  it('honors gatewayBindingKey set by an interceptor', async () => {
+    const pickGet: Interceptor = (next) => async (req) => {
+      req.contextValues.set(gatewayBindingKey, { verb: 'GET' })
+      return next(req)
+    }
+    const { calls, impl } = fakeFetch(() => okJson({ message: 'ok' }))
+    const client = createClient(
+      EchoService,
+      createGatewayTransport({ baseUrl: '', fetch: impl, interceptors: [pickGet] })
+    )
+    await client.multiBind({ id: '7', name: 'n' })
+    assert.equal(calls[0].init.method, 'GET')
+    assert.equal(calls[0].url, '/v1/multi/7?name=n')
+  })
+
+  it('rejects useProtoFieldName at transport creation', () => {
+    assert.throws(
+      () => createGatewayTransport({ baseUrl: '', jsonOptions: { useProtoFieldName: true } }),
+      /useProtoFieldName/
+    )
+  })
+
   it('selects additional bindings per call via gatewayBindingKey', async () => {
     const { calls, impl } = fakeFetch(() => okJson({ message: 'ok' }))
     const client = createClient(EchoService, createGatewayTransport({ baseUrl: '', fetch: impl }))

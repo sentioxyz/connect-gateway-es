@@ -76,18 +76,28 @@ export interface NormalizedGatewayOptions {
 }
 
 export function normalizeGatewayOptions(options: GatewayTransportOptions): NormalizedGatewayOptions {
+  if (options.jsonOptions?.useProtoFieldName) {
+    // The transcoder carves the protojson tree by jsonName; proto-name JSON
+    // keys would silently break path/query extraction.
+    throw new Error(
+      'connect-gateway-es: jsonOptions.useProtoFieldName is not supported (use queryParamCase: "proto" for snake_case query keys)'
+    )
+  }
+  // Single source of truth for the registry: the dedicated option wins, else
+  // a registry passed through jsonOptions; used for JSON I/O AND error details.
+  const registry = options.registry ?? options.jsonOptions?.registry
   const jsonRead: Partial<JsonReadOptions> = { ignoreUnknownFields: true, ...options.jsonOptions }
   const jsonWrite: Partial<JsonWriteOptions> = { ...options.jsonOptions }
-  if (options.registry !== undefined) {
-    jsonRead.registry = options.registry
-    jsonWrite.registry = options.registry
+  if (registry !== undefined) {
+    jsonRead.registry = registry
+    jsonWrite.registry = registry
   }
   return {
     baseUrl: options.baseUrl.replace(/\/+$/, ''),
     fetch: options.fetch ?? globalThis.fetch?.bind(globalThis),
     interceptors: options.interceptors ?? [],
     defaultTimeoutMs: options.defaultTimeoutMs,
-    registry: options.registry,
+    registry,
     jsonRead,
     jsonWrite,
     queryParamCase: options.queryParamCase ?? 'json',

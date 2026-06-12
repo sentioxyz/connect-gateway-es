@@ -15,7 +15,8 @@ import {
   GetWildcardRequestSchema,
   KitchenSinkRequestSchema,
   PostBodyRequestSchema,
-  PostNamedBodyRequestSchema
+  PostNamedBodyRequestSchema,
+  ZeroPathRequestSchema
 } from '../gen/clean/connectgateway/testing/echo_pb.js'
 
 const OPTS: TranscodeOptions = { queryParamCase: 'json' }
@@ -123,7 +124,7 @@ describe('query param flattening (kitchen sink)', () => {
     optZero: 0,
     createdAt: timestampFromDate(new Date(Date.UTC(2026, 5, 12, 10, 30, 45))),
     ttl: { seconds: 90n, nanos: 0 },
-    mask: { paths: ['a.b', 'c'] },
+    mask: { paths: ['big_tags', 'inner.a'] },
     strValue: 'wrapped',
     i64Value: 5n,
     boolValue: false,
@@ -158,7 +159,9 @@ describe('query param flattening (kitchen sink)', () => {
     assert.deepEqual(q.get('optZero'), ['0'])
     assert.deepEqual(q.get('createdAt'), ['2026-06-12T10:30:45Z'])
     assert.deepEqual(q.get('ttl'), ['90s'])
-    assert.deepEqual(q.get('mask'), ['a.b,c'])
+    // protojson camelCases mask paths; the gateway stores query masks
+    // verbatim, so the transcoder must convert back to snake_case.
+    assert.deepEqual(q.get('mask'), ['big_tags,inner.a'])
     assert.deepEqual(q.get('strValue'), ['wrapped'])
     assert.deepEqual(q.get('i64Value'), ['5'])
     assert.deepEqual(q.get('boolValue'), ['false'])
@@ -186,6 +189,38 @@ describe('query param flattening (kitchen sink)', () => {
       () => transcodeRequest(binding('queryKitchenSink'), KitchenSinkRequestSchema, withMap, OPTS),
       ConnectError
     )
+  })
+
+  it('rejects ListValue and repeated Value fields in query strings', () => {
+    const withListValue = create(KitchenSinkRequestSchema, {
+      listValue: { values: [{ kind: { case: 'stringValue', value: 'two' } }] }
+    })
+    assert.throws(
+      () => transcodeRequest(binding('queryKitchenSink'), KitchenSinkRequestSchema, withListValue, OPTS),
+      ConnectError
+    )
+    const withValueList = create(KitchenSinkRequestSchema, {
+      valueList: [{ kind: { case: 'numberValue', value: 1 } }]
+    })
+    assert.throws(
+      () => transcodeRequest(binding('queryKitchenSink'), KitchenSinkRequestSchema, withValueList, OPTS),
+      ConnectError
+    )
+  })
+})
+
+describe('zero-valued path variables', () => {
+  it('renders implicit-presence zeros instead of throwing', () => {
+    const msg = create(ZeroPathRequestSchema, { note: 'n' })
+    const out = transcodeRequest(binding('getZeros'), ZeroPathRequestSchema, msg, OPTS)
+    assert.equal(out.path, '/v1/zeros/0/false/COLOR_UNSPECIFIED/0')
+    assert.deepEqual(out.query, [['note', 'n']])
+  })
+
+  it('still renders explicit values', () => {
+    const msg = create(ZeroPathRequestSchema, { i32: -3, flag: true, color: Color.GREEN, i64: 8n })
+    const out = transcodeRequest(binding('getZeros'), ZeroPathRequestSchema, msg, OPTS)
+    assert.equal(out.path, '/v1/zeros/-3/true/COLOR_GREEN/8')
   })
 })
 

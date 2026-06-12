@@ -114,6 +114,10 @@ func (s *echoServer) QueryKitchenSink(ctx context.Context, req *pb.KitchenSinkRe
 	return echo(ctx, "QueryKitchenSink", req), nil
 }
 
+func (s *echoServer) GetZeros(ctx context.Context, req *pb.ZeroPathRequest) (*pb.EchoResponse, error) {
+	return echo(ctx, "GetZeros", req), nil
+}
+
 func (s *echoServer) GetRaw(ctx context.Context, req *pb.GetSimpleRequest) (*httpbody.HttpBody, error) {
 	return &httpbody.HttpBody{
 		ContentType: "text/x-raw; charset=utf-8",

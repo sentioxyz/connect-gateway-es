@@ -154,7 +154,10 @@ export function createGatewayTransport(options: GatewayTransportOptions): Transp
     unary(method, signal, timeoutMs, header, message, contextValues) {
       const route = resolveRoute(method)
       const ctx = contextValues ?? createContextValues()
-      const binding = pickBinding(route, ctx, message)
+      // Pre-selection only feeds the interceptor-visible requestMethod/url;
+      // the effective binding is re-picked in next() so interceptors can set
+      // gatewayBindingKey or swap the message.
+      const previewBinding = pickBinding(route, ctx, message)
       return runUnaryCall({
         interceptors: opt.interceptors,
         signal,
@@ -163,15 +166,18 @@ export function createGatewayTransport(options: GatewayTransportOptions): Transp
           stream: false,
           service: method.parent,
           method,
-          requestMethod: binding.verb,
+          requestMethod: previewBinding.verb,
           // Interceptors see the un-substituted template: the final URL
           // depends on the message after interceptors run.
-          url: opt.baseUrl + binding.template.raw,
+          url: opt.baseUrl + previewBinding.template.raw,
           header: new Headers(header),
           contextValues: ctx,
           message
         },
         next: async (req) => {
+          // req.message is the normalized full message here (runUnaryCall
+          // applies create()), so selectBinding sees a real MessageShape.
+          const binding = pickBinding(route, req.contextValues, req.message)
           const { url, init } = buildHttpRequest(opt, method, binding, req.message, req.header, req.contextValues)
           const response = await doFetch(url, init, req.signal)
           const { header: resHeader, trailer } = splitGatewayMetadata(response.headers)
@@ -206,6 +212,12 @@ export function createGatewayTransport(options: GatewayTransportOptions): Transp
       if (method.methodKind !== 'server_streaming') {
         throw new ConnectError(
           `${method.methodKind} is not supported: grpc-gateway only transcodes unary and server-streaming RPCs`,
+          Code.Unimplemented
+        )
+      }
+      if (isHttpBody(method.output)) {
+        throw new ConnectError(
+          'server-streaming google.api.HttpBody responses are not supported: the gateway emits raw unframed bytes, not NDJSON',
           Code.Unimplemented
         )
       }

@@ -5,10 +5,23 @@ export type QueryParamCase = 'json' | 'proto'
 
 // These serialize to arbitrary JSON; grpc-gateway parses the raw query value
 // with the type's UnmarshalJSON, so we send the JSON text as a single param.
-const JSON_BLOB_TYPES = new Set(['google.protobuf.Struct', 'google.protobuf.Value', 'google.protobuf.ListValue'])
+// ListValue is NOT included: the gateway's query parser rejects it.
+const JSON_BLOB_TYPES = new Set(['google.protobuf.Struct', 'google.protobuf.Value'])
 
 function scalarToString(value: JsonValue): string {
   return typeof value === 'string' ? value : String(value)
+}
+
+// protojson camelCases FieldMask paths ('display_name' -> 'displayName'), but
+// grpc-gateway's query parser stores the comma-split paths verbatim with no
+// reversal (that only happens for request bodies). Convert back to snake_case
+// so the server sees the proto field paths. Lossless: protobuf-es toJson
+// already rejects irreversible paths.
+function fieldMaskToQueryValue(protojsonValue: string): string {
+  return protojsonValue
+    .split(',')
+    .map((path) => path.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`))
+    .join(',')
 }
 
 function unsupported(fullKey: string, why: string): ConnectError {
@@ -54,6 +67,11 @@ function flattenInto(
         sink.push([fullKey, scalarToString(value)])
         break
       case 'list': {
+        if (field.listKind === 'message' && JSON_BLOB_TYPES.has(field.message.typeName)) {
+          // Scalar-serialized Value elements would lose their JSON typing and
+          // the gateway rejects repeated Struct either way.
+          throw unsupported(fullKey, `repeated ${field.message.typeName} is not supported in query strings`)
+        }
         for (const element of value as JsonValue[]) {
           if (element === null || typeof element === 'object') {
             throw unsupported(fullKey, 'repeated message values are not supported in query strings')
@@ -63,6 +81,8 @@ function flattenInto(
         break
       }
       case 'map':
+        // grpc-gateway can parse key[mapKey]=value pairs, but the encoding is
+        // version-sensitive; rejecting keeps the dialect predictable.
         throw unsupported(fullKey, 'map fields are not supported in query strings')
       case 'message': {
         const typeName = field.message.typeName
@@ -70,15 +90,25 @@ function flattenInto(
           sink.push([fullKey, JSON.stringify(value)])
           break
         }
-        if (typeName === 'google.api.HttpBody' || typeName === 'google.protobuf.Any') {
+        if (
+          typeName === 'google.api.HttpBody' ||
+          typeName === 'google.protobuf.Any' ||
+          typeName === 'google.protobuf.ListValue'
+        ) {
           throw unsupported(fullKey, `${typeName} is not supported in query strings`)
         }
         if (value === null) {
           break
         }
+        if (typeName === 'google.protobuf.FieldMask') {
+          if (typeof value === 'string' && value !== '') {
+            sink.push([fullKey, fieldMaskToQueryValue(value)])
+          }
+          break
+        }
         if (typeof value !== 'object') {
-          // Scalar-serializing well-known types: Timestamp, Duration,
-          // FieldMask and the wrapper types.
+          // Scalar-serializing well-known types: Timestamp, Duration and the
+          // wrapper types.
           sink.push([fullKey, scalarToString(value)])
           break
         }

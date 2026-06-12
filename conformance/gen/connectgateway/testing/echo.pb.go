@@ -553,6 +553,8 @@ type KitchenSinkRequest struct {
 	//	*KitchenSinkRequest_OneofStr
 	//	*KitchenSinkRequest_OneofInt
 	Choice        isKitchenSinkRequest_Choice `protobuf_oneof:"choice"`
+	ListValue     *structpb.ListValue         `protobuf:"bytes,24,opt,name=list_value,json=listValue,proto3" json:"list_value,omitempty"`
+	ValueList     []*structpb.Value           `protobuf:"bytes,25,rep,name=value_list,json=valueList,proto3" json:"value_list,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -759,6 +761,20 @@ func (x *KitchenSinkRequest) GetOneofInt() int64 {
 	return 0
 }
 
+func (x *KitchenSinkRequest) GetListValue() *structpb.ListValue {
+	if x != nil {
+		return x.ListValue
+	}
+	return nil
+}
+
+func (x *KitchenSinkRequest) GetValueList() []*structpb.Value {
+	if x != nil {
+		return x.ValueList
+	}
+	return nil
+}
+
 type isKitchenSinkRequest_Choice interface {
 	isKitchenSinkRequest_Choice()
 }
@@ -775,6 +791,82 @@ func (*KitchenSinkRequest_OneofStr) isKitchenSinkRequest_Choice() {}
 
 func (*KitchenSinkRequest_OneofInt) isKitchenSinkRequest_Choice() {}
 
+type ZeroPathRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	I32           int32                  `protobuf:"varint,1,opt,name=i32,proto3" json:"i32,omitempty"`
+	Flag          bool                   `protobuf:"varint,2,opt,name=flag,proto3" json:"flag,omitempty"`
+	Color         Color                  `protobuf:"varint,3,opt,name=color,proto3,enum=connectgateway.testing.Color" json:"color,omitempty"`
+	I64           int64                  `protobuf:"varint,4,opt,name=i64,proto3" json:"i64,omitempty"`
+	Note          string                 `protobuf:"bytes,5,opt,name=note,proto3" json:"note,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ZeroPathRequest) Reset() {
+	*x = ZeroPathRequest{}
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ZeroPathRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ZeroPathRequest) ProtoMessage() {}
+
+func (x *ZeroPathRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ZeroPathRequest.ProtoReflect.Descriptor instead.
+func (*ZeroPathRequest) Descriptor() ([]byte, []int) {
+	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ZeroPathRequest) GetI32() int32 {
+	if x != nil {
+		return x.I32
+	}
+	return 0
+}
+
+func (x *ZeroPathRequest) GetFlag() bool {
+	if x != nil {
+		return x.Flag
+	}
+	return false
+}
+
+func (x *ZeroPathRequest) GetColor() Color {
+	if x != nil {
+		return x.Color
+	}
+	return Color_COLOR_UNSPECIFIED
+}
+
+func (x *ZeroPathRequest) GetI64() int64 {
+	if x != nil {
+		return x.I64
+	}
+	return 0
+}
+
+func (x *ZeroPathRequest) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
 type FailRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
@@ -786,7 +878,7 @@ type FailRequest struct {
 
 func (x *FailRequest) Reset() {
 	*x = FailRequest{}
-	mi := &file_connectgateway_testing_echo_proto_msgTypes[9]
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -798,7 +890,7 @@ func (x *FailRequest) String() string {
 func (*FailRequest) ProtoMessage() {}
 
 func (x *FailRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_connectgateway_testing_echo_proto_msgTypes[9]
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +903,7 @@ func (x *FailRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FailRequest.ProtoReflect.Descriptor instead.
 func (*FailRequest) Descriptor() ([]byte, []int) {
-	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{9}
+	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *FailRequest) GetCode() int32 {
@@ -845,7 +937,7 @@ type StreamEchoRequest struct {
 
 func (x *StreamEchoRequest) Reset() {
 	*x = StreamEchoRequest{}
-	mi := &file_connectgateway_testing_echo_proto_msgTypes[10]
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -857,7 +949,7 @@ func (x *StreamEchoRequest) String() string {
 func (*StreamEchoRequest) ProtoMessage() {}
 
 func (x *StreamEchoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_connectgateway_testing_echo_proto_msgTypes[10]
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -870,7 +962,7 @@ func (x *StreamEchoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamEchoRequest.ProtoReflect.Descriptor instead.
 func (*StreamEchoRequest) Descriptor() ([]byte, []int) {
-	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{10}
+	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *StreamEchoRequest) GetCount() int32 {
@@ -903,7 +995,7 @@ type EchoResponse struct {
 
 func (x *EchoResponse) Reset() {
 	*x = EchoResponse{}
-	mi := &file_connectgateway_testing_echo_proto_msgTypes[11]
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -915,7 +1007,7 @@ func (x *EchoResponse) String() string {
 func (*EchoResponse) ProtoMessage() {}
 
 func (x *EchoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_connectgateway_testing_echo_proto_msgTypes[11]
+	mi := &file_connectgateway_testing_echo_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -928,7 +1020,7 @@ func (x *EchoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EchoResponse.ProtoReflect.Descriptor instead.
 func (*EchoResponse) Descriptor() ([]byte, []int) {
-	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{11}
+	return file_connectgateway_testing_echo_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *EchoResponse) GetObservedMethod() string {
@@ -1006,7 +1098,7 @@ const file_connectgateway_testing_echo_proto_rawDesc = "" +
 	"\x14PostNamedBodyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x127\n" +
 	"\apayload\x18\x02 \x01(\v2\x1d.connectgateway.testing.InnerR\apayload\x12\x14\n" +
-	"\x05extra\x18\x03 \x01(\tR\x05extra\"\xd6\a\n" +
+	"\x05extra\x18\x03 \x01(\tR\x05extra\"\xc8\b\n" +
 	"\x12KitchenSinkRequest\x12\x10\n" +
 	"\x03str\x18\x01 \x01(\tR\x03str\x12\x10\n" +
 	"\x03i32\x18\x02 \x01(\x05R\x03i32\x12\x10\n" +
@@ -1033,14 +1125,24 @@ const file_connectgateway_testing_echo_proto_rawDesc = "" +
 	"\bmetadata\x18\x14 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x12N\n" +
 	"\x06labels\x18\x15 \x03(\v26.connectgateway.testing.KitchenSinkRequest.LabelsEntryR\x06labels\x12\x1d\n" +
 	"\toneof_str\x18\x16 \x01(\tH\x00R\boneofStr\x12\x1d\n" +
-	"\toneof_int\x18\x17 \x01(\x03H\x00R\boneofInt\x1a9\n" +
+	"\toneof_int\x18\x17 \x01(\x03H\x00R\boneofInt\x129\n" +
+	"\n" +
+	"list_value\x18\x18 \x01(\v2\x1a.google.protobuf.ListValueR\tlistValue\x125\n" +
+	"\n" +
+	"value_list\x18\x19 \x03(\v2\x16.google.protobuf.ValueR\tvalueList\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
 	"\x06choiceB\n" +
 	"\n" +
 	"\b_opt_strB\v\n" +
-	"\t_opt_zero\"\\\n" +
+	"\t_opt_zero\"\x92\x01\n" +
+	"\x0fZeroPathRequest\x12\x10\n" +
+	"\x03i32\x18\x01 \x01(\x05R\x03i32\x12\x12\n" +
+	"\x04flag\x18\x02 \x01(\bR\x04flag\x123\n" +
+	"\x05color\x18\x03 \x01(\x0e2\x1d.connectgateway.testing.ColorR\x05color\x12\x10\n" +
+	"\x03i64\x18\x04 \x01(\x03R\x03i64\x12\x12\n" +
+	"\x04note\x18\x05 \x01(\tR\x04note\"\\\n" +
 	"\vFailRequest\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1f\n" +
@@ -1059,7 +1161,7 @@ const file_connectgateway_testing_echo_proto_rawDesc = "" +
 	"\x05Color\x12\x15\n" +
 	"\x11COLOR_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOLOR_RED\x10\x01\x12\x0f\n" +
-	"\vCOLOR_GREEN\x10\x022\xaf\x0f\n" +
+	"\vCOLOR_GREEN\x10\x022\xb9\x10\n" +
 	"\vEchoService\x12t\n" +
 	"\tGetSimple\x12(.connectgateway.testing.GetSimpleRequest\x1a$.connectgateway.testing.EchoResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/simple/{id}\x12\xa1\x01\n" +
 	"\tGetNested\x12(.connectgateway.testing.GetNestedRequest\x1a$.connectgateway.testing.EchoResponse\"D\x82\xd3\xe4\x93\x02>\x12</v1/nested/{owner_and_slug.owner_name}/{owner_and_slug.slug}\x12\x89\x01\n" +
@@ -1072,7 +1174,8 @@ const file_connectgateway_testing_echo_proto_rawDesc = "" +
 	"\tPatchBody\x12'.connectgateway.testing.PostBodyRequest\x1a$.connectgateway.testing.EchoResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*2\x0f/v1/things/{id}\x12w\n" +
 	"\fDeleteSimple\x12(.connectgateway.testing.GetSimpleRequest\x1a$.connectgateway.testing.EchoResponse\"\x17\x82\xd3\xe4\x93\x02\x11*\x0f/v1/things/{id}\x12\xae\x01\n" +
 	"\tMultiBind\x12'.connectgateway.testing.PostBodyRequest\x1a$.connectgateway.testing.EchoResponse\"R\x82\xd3\xe4\x93\x02L:\x01*Z\x10\x12\x0e/v1/multi/{id}Z\x13:\x01*\x1a\x0e/v1/multi/{id}Z\x10*\x0e/v1/multi/{id}\"\x0e/v1/multi/{id}\x12w\n" +
-	"\x10QueryKitchenSink\x12*.connectgateway.testing.KitchenSinkRequest\x1a$.connectgateway.testing.EchoResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/v1/query\x12^\n" +
+	"\x10QueryKitchenSink\x12*.connectgateway.testing.KitchenSinkRequest\x1a$.connectgateway.testing.EchoResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/v1/query\x12\x87\x01\n" +
+	"\bGetZeros\x12'.connectgateway.testing.ZeroPathRequest\x1a$.connectgateway.testing.EchoResponse\",\x82\xd3\xe4\x93\x02&\x12$/v1/zeros/{i32}/{flag}/{color}/{i64}\x12^\n" +
 	"\x06GetRaw\x12(.connectgateway.testing.GetSimpleRequest\x1a\x14.google.api.HttpBody\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/raw/{id}\x12I\n" +
 	"\aPostRaw\x12\x14.google.api.HttpBody\x1a\x14.google.api.HttpBody\"\x12\x82\xd3\xe4\x93\x02\f:\x01*\"\a/v1/raw\x12c\n" +
 	"\x04Fail\x12#.connectgateway.testing.FailRequest\x1a$.connectgateway.testing.EchoResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
@@ -1095,7 +1198,7 @@ func file_connectgateway_testing_echo_proto_rawDescGZIP() []byte {
 }
 
 var file_connectgateway_testing_echo_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_connectgateway_testing_echo_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_connectgateway_testing_echo_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_connectgateway_testing_echo_proto_goTypes = []any{
 	(Color)(0),                     // 0: connectgateway.testing.Color
 	(*GetSimpleRequest)(nil),       // 1: connectgateway.testing.GetSimpleRequest
@@ -1107,18 +1210,21 @@ var file_connectgateway_testing_echo_proto_goTypes = []any{
 	(*PostBodyRequest)(nil),        // 7: connectgateway.testing.PostBodyRequest
 	(*PostNamedBodyRequest)(nil),   // 8: connectgateway.testing.PostNamedBodyRequest
 	(*KitchenSinkRequest)(nil),     // 9: connectgateway.testing.KitchenSinkRequest
-	(*FailRequest)(nil),            // 10: connectgateway.testing.FailRequest
-	(*StreamEchoRequest)(nil),      // 11: connectgateway.testing.StreamEchoRequest
-	(*EchoResponse)(nil),           // 12: connectgateway.testing.EchoResponse
-	nil,                            // 13: connectgateway.testing.KitchenSinkRequest.LabelsEntry
-	(*timestamppb.Timestamp)(nil),  // 14: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),    // 15: google.protobuf.Duration
-	(*fieldmaskpb.FieldMask)(nil),  // 16: google.protobuf.FieldMask
-	(*wrapperspb.StringValue)(nil), // 17: google.protobuf.StringValue
-	(*wrapperspb.Int64Value)(nil),  // 18: google.protobuf.Int64Value
-	(*wrapperspb.BoolValue)(nil),   // 19: google.protobuf.BoolValue
-	(*structpb.Struct)(nil),        // 20: google.protobuf.Struct
-	(*httpbody.HttpBody)(nil),      // 21: google.api.HttpBody
+	(*ZeroPathRequest)(nil),        // 10: connectgateway.testing.ZeroPathRequest
+	(*FailRequest)(nil),            // 11: connectgateway.testing.FailRequest
+	(*StreamEchoRequest)(nil),      // 12: connectgateway.testing.StreamEchoRequest
+	(*EchoResponse)(nil),           // 13: connectgateway.testing.EchoResponse
+	nil,                            // 14: connectgateway.testing.KitchenSinkRequest.LabelsEntry
+	(*timestamppb.Timestamp)(nil),  // 15: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),    // 16: google.protobuf.Duration
+	(*fieldmaskpb.FieldMask)(nil),  // 17: google.protobuf.FieldMask
+	(*wrapperspb.StringValue)(nil), // 18: google.protobuf.StringValue
+	(*wrapperspb.Int64Value)(nil),  // 19: google.protobuf.Int64Value
+	(*wrapperspb.BoolValue)(nil),   // 20: google.protobuf.BoolValue
+	(*structpb.Struct)(nil),        // 21: google.protobuf.Struct
+	(*structpb.ListValue)(nil),     // 22: google.protobuf.ListValue
+	(*structpb.Value)(nil),         // 23: google.protobuf.Value
+	(*httpbody.HttpBody)(nil),      // 24: google.api.HttpBody
 }
 var file_connectgateway_testing_echo_proto_depIdxs = []int32{
 	2,  // 0: connectgateway.testing.GetNestedRequest.owner_and_slug:type_name -> connectgateway.testing.OwnerAndSlug
@@ -1126,52 +1232,57 @@ var file_connectgateway_testing_echo_proto_depIdxs = []int32{
 	6,  // 2: connectgateway.testing.PostNamedBodyRequest.payload:type_name -> connectgateway.testing.Inner
 	0,  // 3: connectgateway.testing.KitchenSinkRequest.color:type_name -> connectgateway.testing.Color
 	6,  // 4: connectgateway.testing.KitchenSinkRequest.inner:type_name -> connectgateway.testing.Inner
-	14, // 5: connectgateway.testing.KitchenSinkRequest.created_at:type_name -> google.protobuf.Timestamp
-	15, // 6: connectgateway.testing.KitchenSinkRequest.ttl:type_name -> google.protobuf.Duration
-	16, // 7: connectgateway.testing.KitchenSinkRequest.mask:type_name -> google.protobuf.FieldMask
-	17, // 8: connectgateway.testing.KitchenSinkRequest.str_value:type_name -> google.protobuf.StringValue
-	18, // 9: connectgateway.testing.KitchenSinkRequest.i64_value:type_name -> google.protobuf.Int64Value
-	19, // 10: connectgateway.testing.KitchenSinkRequest.bool_value:type_name -> google.protobuf.BoolValue
-	20, // 11: connectgateway.testing.KitchenSinkRequest.metadata:type_name -> google.protobuf.Struct
-	13, // 12: connectgateway.testing.KitchenSinkRequest.labels:type_name -> connectgateway.testing.KitchenSinkRequest.LabelsEntry
-	20, // 13: connectgateway.testing.EchoResponse.decoded_request:type_name -> google.protobuf.Struct
-	1,  // 14: connectgateway.testing.EchoService.GetSimple:input_type -> connectgateway.testing.GetSimpleRequest
-	3,  // 15: connectgateway.testing.EchoService.GetNested:input_type -> connectgateway.testing.GetNestedRequest
-	4,  // 16: connectgateway.testing.EchoService.GetWildcard:input_type -> connectgateway.testing.GetWildcardRequest
-	5,  // 17: connectgateway.testing.EchoService.GetPattern:input_type -> connectgateway.testing.GetPatternRequest
-	7,  // 18: connectgateway.testing.EchoService.PostBody:input_type -> connectgateway.testing.PostBodyRequest
-	8,  // 19: connectgateway.testing.EchoService.PostNamedBody:input_type -> connectgateway.testing.PostNamedBodyRequest
-	7,  // 20: connectgateway.testing.EchoService.PutBody:input_type -> connectgateway.testing.PostBodyRequest
-	7,  // 21: connectgateway.testing.EchoService.PatchBody:input_type -> connectgateway.testing.PostBodyRequest
-	1,  // 22: connectgateway.testing.EchoService.DeleteSimple:input_type -> connectgateway.testing.GetSimpleRequest
-	7,  // 23: connectgateway.testing.EchoService.MultiBind:input_type -> connectgateway.testing.PostBodyRequest
-	9,  // 24: connectgateway.testing.EchoService.QueryKitchenSink:input_type -> connectgateway.testing.KitchenSinkRequest
-	1,  // 25: connectgateway.testing.EchoService.GetRaw:input_type -> connectgateway.testing.GetSimpleRequest
-	21, // 26: connectgateway.testing.EchoService.PostRaw:input_type -> google.api.HttpBody
-	10, // 27: connectgateway.testing.EchoService.Fail:input_type -> connectgateway.testing.FailRequest
-	11, // 28: connectgateway.testing.EchoService.StreamEcho:input_type -> connectgateway.testing.StreamEchoRequest
-	1,  // 29: connectgateway.testing.EchoService.NoAnnotation:input_type -> connectgateway.testing.GetSimpleRequest
-	12, // 30: connectgateway.testing.EchoService.GetSimple:output_type -> connectgateway.testing.EchoResponse
-	12, // 31: connectgateway.testing.EchoService.GetNested:output_type -> connectgateway.testing.EchoResponse
-	12, // 32: connectgateway.testing.EchoService.GetWildcard:output_type -> connectgateway.testing.EchoResponse
-	12, // 33: connectgateway.testing.EchoService.GetPattern:output_type -> connectgateway.testing.EchoResponse
-	12, // 34: connectgateway.testing.EchoService.PostBody:output_type -> connectgateway.testing.EchoResponse
-	12, // 35: connectgateway.testing.EchoService.PostNamedBody:output_type -> connectgateway.testing.EchoResponse
-	12, // 36: connectgateway.testing.EchoService.PutBody:output_type -> connectgateway.testing.EchoResponse
-	12, // 37: connectgateway.testing.EchoService.PatchBody:output_type -> connectgateway.testing.EchoResponse
-	12, // 38: connectgateway.testing.EchoService.DeleteSimple:output_type -> connectgateway.testing.EchoResponse
-	12, // 39: connectgateway.testing.EchoService.MultiBind:output_type -> connectgateway.testing.EchoResponse
-	12, // 40: connectgateway.testing.EchoService.QueryKitchenSink:output_type -> connectgateway.testing.EchoResponse
-	21, // 41: connectgateway.testing.EchoService.GetRaw:output_type -> google.api.HttpBody
-	21, // 42: connectgateway.testing.EchoService.PostRaw:output_type -> google.api.HttpBody
-	12, // 43: connectgateway.testing.EchoService.Fail:output_type -> connectgateway.testing.EchoResponse
-	12, // 44: connectgateway.testing.EchoService.StreamEcho:output_type -> connectgateway.testing.EchoResponse
-	12, // 45: connectgateway.testing.EchoService.NoAnnotation:output_type -> connectgateway.testing.EchoResponse
-	30, // [30:46] is the sub-list for method output_type
-	14, // [14:30] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	15, // 5: connectgateway.testing.KitchenSinkRequest.created_at:type_name -> google.protobuf.Timestamp
+	16, // 6: connectgateway.testing.KitchenSinkRequest.ttl:type_name -> google.protobuf.Duration
+	17, // 7: connectgateway.testing.KitchenSinkRequest.mask:type_name -> google.protobuf.FieldMask
+	18, // 8: connectgateway.testing.KitchenSinkRequest.str_value:type_name -> google.protobuf.StringValue
+	19, // 9: connectgateway.testing.KitchenSinkRequest.i64_value:type_name -> google.protobuf.Int64Value
+	20, // 10: connectgateway.testing.KitchenSinkRequest.bool_value:type_name -> google.protobuf.BoolValue
+	21, // 11: connectgateway.testing.KitchenSinkRequest.metadata:type_name -> google.protobuf.Struct
+	14, // 12: connectgateway.testing.KitchenSinkRequest.labels:type_name -> connectgateway.testing.KitchenSinkRequest.LabelsEntry
+	22, // 13: connectgateway.testing.KitchenSinkRequest.list_value:type_name -> google.protobuf.ListValue
+	23, // 14: connectgateway.testing.KitchenSinkRequest.value_list:type_name -> google.protobuf.Value
+	0,  // 15: connectgateway.testing.ZeroPathRequest.color:type_name -> connectgateway.testing.Color
+	21, // 16: connectgateway.testing.EchoResponse.decoded_request:type_name -> google.protobuf.Struct
+	1,  // 17: connectgateway.testing.EchoService.GetSimple:input_type -> connectgateway.testing.GetSimpleRequest
+	3,  // 18: connectgateway.testing.EchoService.GetNested:input_type -> connectgateway.testing.GetNestedRequest
+	4,  // 19: connectgateway.testing.EchoService.GetWildcard:input_type -> connectgateway.testing.GetWildcardRequest
+	5,  // 20: connectgateway.testing.EchoService.GetPattern:input_type -> connectgateway.testing.GetPatternRequest
+	7,  // 21: connectgateway.testing.EchoService.PostBody:input_type -> connectgateway.testing.PostBodyRequest
+	8,  // 22: connectgateway.testing.EchoService.PostNamedBody:input_type -> connectgateway.testing.PostNamedBodyRequest
+	7,  // 23: connectgateway.testing.EchoService.PutBody:input_type -> connectgateway.testing.PostBodyRequest
+	7,  // 24: connectgateway.testing.EchoService.PatchBody:input_type -> connectgateway.testing.PostBodyRequest
+	1,  // 25: connectgateway.testing.EchoService.DeleteSimple:input_type -> connectgateway.testing.GetSimpleRequest
+	7,  // 26: connectgateway.testing.EchoService.MultiBind:input_type -> connectgateway.testing.PostBodyRequest
+	9,  // 27: connectgateway.testing.EchoService.QueryKitchenSink:input_type -> connectgateway.testing.KitchenSinkRequest
+	10, // 28: connectgateway.testing.EchoService.GetZeros:input_type -> connectgateway.testing.ZeroPathRequest
+	1,  // 29: connectgateway.testing.EchoService.GetRaw:input_type -> connectgateway.testing.GetSimpleRequest
+	24, // 30: connectgateway.testing.EchoService.PostRaw:input_type -> google.api.HttpBody
+	11, // 31: connectgateway.testing.EchoService.Fail:input_type -> connectgateway.testing.FailRequest
+	12, // 32: connectgateway.testing.EchoService.StreamEcho:input_type -> connectgateway.testing.StreamEchoRequest
+	1,  // 33: connectgateway.testing.EchoService.NoAnnotation:input_type -> connectgateway.testing.GetSimpleRequest
+	13, // 34: connectgateway.testing.EchoService.GetSimple:output_type -> connectgateway.testing.EchoResponse
+	13, // 35: connectgateway.testing.EchoService.GetNested:output_type -> connectgateway.testing.EchoResponse
+	13, // 36: connectgateway.testing.EchoService.GetWildcard:output_type -> connectgateway.testing.EchoResponse
+	13, // 37: connectgateway.testing.EchoService.GetPattern:output_type -> connectgateway.testing.EchoResponse
+	13, // 38: connectgateway.testing.EchoService.PostBody:output_type -> connectgateway.testing.EchoResponse
+	13, // 39: connectgateway.testing.EchoService.PostNamedBody:output_type -> connectgateway.testing.EchoResponse
+	13, // 40: connectgateway.testing.EchoService.PutBody:output_type -> connectgateway.testing.EchoResponse
+	13, // 41: connectgateway.testing.EchoService.PatchBody:output_type -> connectgateway.testing.EchoResponse
+	13, // 42: connectgateway.testing.EchoService.DeleteSimple:output_type -> connectgateway.testing.EchoResponse
+	13, // 43: connectgateway.testing.EchoService.MultiBind:output_type -> connectgateway.testing.EchoResponse
+	13, // 44: connectgateway.testing.EchoService.QueryKitchenSink:output_type -> connectgateway.testing.EchoResponse
+	13, // 45: connectgateway.testing.EchoService.GetZeros:output_type -> connectgateway.testing.EchoResponse
+	24, // 46: connectgateway.testing.EchoService.GetRaw:output_type -> google.api.HttpBody
+	24, // 47: connectgateway.testing.EchoService.PostRaw:output_type -> google.api.HttpBody
+	13, // 48: connectgateway.testing.EchoService.Fail:output_type -> connectgateway.testing.EchoResponse
+	13, // 49: connectgateway.testing.EchoService.StreamEcho:output_type -> connectgateway.testing.EchoResponse
+	13, // 50: connectgateway.testing.EchoService.NoAnnotation:output_type -> connectgateway.testing.EchoResponse
+	34, // [34:51] is the sub-list for method output_type
+	17, // [17:34] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_connectgateway_testing_echo_proto_init() }
@@ -1189,7 +1300,7 @@ func file_connectgateway_testing_echo_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_connectgateway_testing_echo_proto_rawDesc), len(file_connectgateway_testing_echo_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

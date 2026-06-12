@@ -1,5 +1,6 @@
-import { toJson } from '@bufbuild/protobuf'
+import { ScalarType, toJson } from '@bufbuild/protobuf'
 import type { DescField, DescMessage, JsonObject, JsonValue, JsonWriteOptions, MessageShape } from '@bufbuild/protobuf'
+import { FeatureSet_FieldPresence } from '@bufbuild/protobuf/wkt'
 import { Code, ConnectError } from '@connectrpc/connect'
 import { flattenQueryParams } from './query-params.js'
 import type { QueryParamCase } from './query-params.js'
@@ -25,6 +26,8 @@ interface ResolvedField {
   value: JsonValue | undefined
   /** The chain of protojson object keys leading to the value. */
   jsonKeyChain: string[]
+  /** The descriptor of the final path segment's field. */
+  leaf: DescField | undefined
 }
 
 function fieldByProtoName(schema: DescMessage, name: string): DescField | undefined {
@@ -35,6 +38,7 @@ function resolveByProtoPath(schema: DescMessage, json: JsonObject, fieldPath: re
   let curSchema: DescMessage = schema
   let curJson: JsonValue | undefined = json
   const jsonKeyChain: string[] = []
+  let leaf: DescField | undefined
   for (const [index, segment] of fieldPath.entries()) {
     const field = fieldByProtoName(curSchema, segment)
     if (field === undefined) {
@@ -44,10 +48,12 @@ function resolveByProtoPath(schema: DescMessage, json: JsonObject, fieldPath: re
       )
     }
     jsonKeyChain.push(field.jsonName)
+    leaf = field
     if (curJson === undefined || curJson === null || typeof curJson !== 'object' || Array.isArray(curJson)) {
-      return { value: undefined, jsonKeyChain }
+      curJson = undefined
+    } else {
+      curJson = (curJson as JsonObject)[field.jsonName]
     }
-    curJson = (curJson as JsonObject)[field.jsonName]
     if (index < fieldPath.length - 1) {
       if (field.fieldKind !== 'message') {
         throw new ConnectError(
@@ -58,7 +64,38 @@ function resolveByProtoPath(schema: DescMessage, json: JsonObject, fieldPath: re
       curSchema = field.message
     }
   }
-  return { value: curJson, jsonKeyChain }
+  return { value: curJson, jsonKeyChain, leaf }
+}
+
+/**
+ * The protojson zero value for an implicit-presence scalar/enum field. For
+ * such fields "unset" IS the zero value (proto3 cannot tell them apart), so a
+ * path variable resolving to an omitted field must render the zero — the
+ * gateway happily routes /v1/things/0 — rather than fail as "missing".
+ */
+function implicitZeroValue(field: DescField): PathValue | undefined {
+  if (field.presence !== FeatureSet_FieldPresence.IMPLICIT) {
+    return undefined
+  }
+  if (field.fieldKind === 'enum') {
+    return field.enum.values.find((v) => v.number === 0)?.name ?? '0'
+  }
+  if (field.fieldKind !== 'scalar') {
+    return undefined
+  }
+  switch (field.scalar) {
+    case ScalarType.BOOL:
+      return false
+    case ScalarType.STRING:
+    case ScalarType.BYTES:
+      // The zero is the empty string, which cannot occupy a path segment;
+      // renderPath produces the proper "must not be empty" error.
+      return ''
+    default:
+      // All numeric kinds (including 64-bit, which protojson renders as a
+      // decimal string) stringify to '0'.
+      return 0
+  }
 }
 
 function deleteAtChain(json: JsonObject, chain: readonly string[]): void {
@@ -88,16 +125,18 @@ export function transcodeRequest<I extends DescMessage>(
   message: MessageShape<I>,
   opts: TranscodeOptions
 ): TranscodedRequest {
-  const json = toJson(schema, message, opts.jsonWriteOptions)
-  if (json === null || typeof json !== 'object' || Array.isArray(json)) {
+  // toJson returns a fresh tree per call, so it can be carved up in place.
+  const remaining = toJson(schema, message, opts.jsonWriteOptions)
+  if (remaining === null || typeof remaining !== 'object' || Array.isArray(remaining)) {
     throw new ConnectError(`request message ${schema.typeName} did not serialize to a JSON object`, Code.Internal)
   }
-  const remaining = structuredClone(json)
 
   const path = renderPath(binding.template, (fieldPath) => {
     const resolved = resolveByProtoPath(schema, remaining, fieldPath)
     if (resolved.value === undefined) {
-      return undefined
+      // Implicit-presence zero fields are omitted by protojson but are
+      // perfectly valid path values.
+      return resolved.leaf === undefined ? undefined : implicitZeroValue(resolved.leaf)
     }
     deleteAtChain(remaining, resolved.jsonKeyChain)
     return resolved.value as PathValue

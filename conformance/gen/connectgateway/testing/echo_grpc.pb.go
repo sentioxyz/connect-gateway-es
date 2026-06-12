@@ -31,6 +31,7 @@ const (
 	EchoService_DeleteSimple_FullMethodName     = "/connectgateway.testing.EchoService/DeleteSimple"
 	EchoService_MultiBind_FullMethodName        = "/connectgateway.testing.EchoService/MultiBind"
 	EchoService_QueryKitchenSink_FullMethodName = "/connectgateway.testing.EchoService/QueryKitchenSink"
+	EchoService_GetZeros_FullMethodName         = "/connectgateway.testing.EchoService/GetZeros"
 	EchoService_GetRaw_FullMethodName           = "/connectgateway.testing.EchoService/GetRaw"
 	EchoService_PostRaw_FullMethodName          = "/connectgateway.testing.EchoService/PostRaw"
 	EchoService_Fail_FullMethodName             = "/connectgateway.testing.EchoService/Fail"
@@ -64,6 +65,8 @@ type EchoServiceClient interface {
 	MultiBind(ctx context.Context, in *PostBodyRequest, opts ...grpc.CallOption) (*EchoResponse, error)
 	// Every field type that can appear in a query string.
 	QueryKitchenSink(ctx context.Context, in *KitchenSinkRequest, opts ...grpc.CallOption) (*EchoResponse, error)
+	// Numeric/bool/enum path variables: zero values must route.
+	GetZeros(ctx context.Context, in *ZeroPathRequest, opts ...grpc.CallOption) (*EchoResponse, error)
 	// Raw response passthrough.
 	GetRaw(ctx context.Context, in *GetSimpleRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// Raw request passthrough.
@@ -195,6 +198,16 @@ func (c *echoServiceClient) QueryKitchenSink(ctx context.Context, in *KitchenSin
 	return out, nil
 }
 
+func (c *echoServiceClient) GetZeros(ctx context.Context, in *ZeroPathRequest, opts ...grpc.CallOption) (*EchoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EchoResponse)
+	err := c.cc.Invoke(ctx, EchoService_GetZeros_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *echoServiceClient) GetRaw(ctx context.Context, in *GetSimpleRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(httpbody.HttpBody)
@@ -280,6 +293,8 @@ type EchoServiceServer interface {
 	MultiBind(context.Context, *PostBodyRequest) (*EchoResponse, error)
 	// Every field type that can appear in a query string.
 	QueryKitchenSink(context.Context, *KitchenSinkRequest) (*EchoResponse, error)
+	// Numeric/bool/enum path variables: zero values must route.
+	GetZeros(context.Context, *ZeroPathRequest) (*EchoResponse, error)
 	// Raw response passthrough.
 	GetRaw(context.Context, *GetSimpleRequest) (*httpbody.HttpBody, error)
 	// Raw request passthrough.
@@ -333,6 +348,9 @@ func (UnimplementedEchoServiceServer) MultiBind(context.Context, *PostBodyReques
 }
 func (UnimplementedEchoServiceServer) QueryKitchenSink(context.Context, *KitchenSinkRequest) (*EchoResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method QueryKitchenSink not implemented")
+}
+func (UnimplementedEchoServiceServer) GetZeros(context.Context, *ZeroPathRequest) (*EchoResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetZeros not implemented")
 }
 func (UnimplementedEchoServiceServer) GetRaw(context.Context, *GetSimpleRequest) (*httpbody.HttpBody, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetRaw not implemented")
@@ -568,6 +586,24 @@ func _EchoService_QueryKitchenSink_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EchoService_GetZeros_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ZeroPathRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EchoServiceServer).GetZeros(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EchoService_GetZeros_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EchoServiceServer).GetZeros(ctx, req.(*ZeroPathRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _EchoService_GetRaw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSimpleRequest)
 	if err := dec(in); err != nil {
@@ -701,6 +737,10 @@ var EchoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryKitchenSink",
 			Handler:    _EchoService_QueryKitchenSink_Handler,
+		},
+		{
+			MethodName: "GetZeros",
+			Handler:    _EchoService_GetZeros_Handler,
 		},
 		{
 			MethodName: "GetRaw",

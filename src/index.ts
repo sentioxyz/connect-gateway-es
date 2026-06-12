@@ -33,3 +33,8 @@ export {
   type HttpBodyRequestMode
 } from './http-body.js'
 export { readNdjsonStream } from './stream.js'
+// Vendored google/api schemas, re-exported for fallbackRule authors and
+// HttpBody typing. The full set is also available via the ./google/api subpath.
+export { http } from './gen/google/api/annotations_pb.js'
+export { HttpRuleSchema, type HttpRule } from './gen/google/api/http_pb.js'
+export { HttpBodySchema, type HttpBody } from './gen/google/api/httpbody_pb.js'

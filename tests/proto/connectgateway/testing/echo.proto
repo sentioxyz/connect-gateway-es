@@ -88,6 +88,11 @@ service EchoService {
     option (google.api.http) = {get: "/v1/query"};
   }
 
+  // Numeric/bool/enum path variables: zero values must route.
+  rpc GetZeros(ZeroPathRequest) returns (EchoResponse) {
+    option (google.api.http) = {get: "/v1/zeros/{i32}/{flag}/{color}/{i64}"};
+  }
+
   // Raw response passthrough.
   rpc GetRaw(GetSimpleRequest) returns (google.api.HttpBody) {
     option (google.api.http) = {get: "/v1/raw/{id}"};
@@ -192,6 +197,16 @@ message KitchenSinkRequest {
     string oneof_str = 22;
     int64 oneof_int = 23;
   }
+  google.protobuf.ListValue list_value = 24;
+  repeated google.protobuf.Value value_list = 25;
+}
+
+message ZeroPathRequest {
+  int32 i32 = 1;
+  bool flag = 2;
+  Color color = 3;
+  int64 i64 = 4;
+  string note = 5;
 }
 
 message FailRequest {

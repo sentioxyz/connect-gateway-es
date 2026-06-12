@@ -123,6 +123,11 @@ try {
 handy for SWR/React Query cache keys. `resolveGatewayRoute(method)` exposes the full
 compiled routing plan.
 
+## Runtime support
+
+Evergreen browsers (2023+) and Node 20+. ESM only; `nodenext`/`bundler` module
+resolution recommended.
+
 ## Limitations
 
 - **Client/bidi streaming**: not expressible through grpc-gateway from browsers —

@@ -125,7 +125,7 @@ compiled routing plan.
 
 ## Runtime support
 
-Evergreen browsers (2023+) and Node 20+. ESM only; `nodenext`/`bundler` module
+Evergreen browsers (2023+) and Node 26+. ESM only; `nodenext`/`bundler` module
 resolution recommended.
 
 ## Limitations

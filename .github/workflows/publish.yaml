@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -44,7 +46,7 @@ jobs:
         with:
           semantic_version: 24.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release Summary
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
@@ -52,7 +54,7 @@ jobs:
           echo "commit: ${GITHUB_SHA}, branch/tag: ${GITHUB_REF}" >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.semantic.outputs.new_release_notes }}" >> $GITHUB_STEP_SUMMARY
         env:
-          GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: NPM Publish
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
